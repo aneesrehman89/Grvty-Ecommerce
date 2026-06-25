@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+@layer base {
+  body {
+    @apply bg-brand-white text-brand-ink antialiased selection:bg-brand-blue selection:text-white font-sans;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Soft card lift used on category tiles, product cards, and review cards */
+.premium-border-glow {
+  border: 1px solid rgba(15, 17, 17, 0.06);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.premium-border-glow:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 12px 28px rgba(15, 17, 17, 0.07);
+  transform: translateY(-2px);
+}
+
+/* Subtle fade-in used for mobile nav drawer */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Light, minimal scrollbars to match the clean storefront aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
