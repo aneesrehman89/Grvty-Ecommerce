@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
+import slugify from '../utils/slugify.js';
+
+export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+export const PRODUCT_TAGS = ['best-seller', 'new-drop', 'summer-edit', 'featured'];
 
 // One size+color combination with its own stock count.
-// Embedded directly on the product — no separate collection needed
-// for a catalog this size.
+// Embedded on the product — no separate collection needed for a catalog this size.
 const variantSchema = new mongoose.Schema(
   {
     size: {
       type: String,
       required: [true, 'Variant size is required'],
-      enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      enum: SIZES,
     },
     color: {
       type: String,
@@ -20,6 +23,10 @@ const variantSchema = new mongoose.Schema(
       required: true,
       min: [0, 'Stock cannot be negative'],
       default: 0,
+    },
+    sku: {
+      type: String,
+      trim: true,
     },
   },
   { _id: true } // each variant gets its own _id so the cart can reference a specific one
@@ -44,10 +51,21 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product description is required'],
       trim: true,
     },
+    details: {
+      // Bullet points shown in the "Details & Fit" accordion
+      type: [String],
+      default: [],
+    },
     price: {
       type: Number,
       required: [true, 'Product price is required'],
       min: [0, 'Price cannot be negative'],
+    },
+    compareAtPrice: {
+      // Optional original price, used to show a "sale" strike-through
+      type: Number,
+      min: 0,
+      default: null,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -69,8 +87,7 @@ const productSchema = new mongoose.Schema(
       },
     },
     tags: {
-      type: [String],
-      enum: ['best-seller', 'new-drop', 'summer-edit', 'featured'],
+      type: [{ type: String, enum: PRODUCT_TAGS }],
       default: [],
     },
     rating: {
@@ -83,26 +100,37 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    soldCount: {
+      type: Number,
+      default: 0,
+    },
     isActive: {
       type: Boolean,
       default: true, // soft-disable a product without deleting it
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
-// Text index powers /products/search?q= ; slug index powers /products/:slug lookups
-productSchema.index({ name: 'text' });
+productSchema.virtual('totalStock').get(function () {
+  return (this.variants || []).reduce((sum, v) => sum + (v.stock || 0), 0);
+});
 
-// Auto-generate the slug from the name whenever it changes,
-// so the controller never has to set it manually.
+productSchema.virtual('inStock').get(function () {
+  return (this.variants || []).some((v) => v.stock > 0);
+});
+
+// Text index powers search; compound index speeds up the shop listing.
+productSchema.index({ name: 'text', description: 'text' }, { weights: { name: 5, description: 1 } });
+productSchema.index({ isActive: 1, category: 1, createdAt: -1 });
+
 productSchema.pre('save', function (next) {
   if (this.isModified('name')) {
-    this.slug = this.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+    this.slug = slugify(this.name);
   }
   next();
 });

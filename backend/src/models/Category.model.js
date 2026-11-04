@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import slugify from '../utils/slugify.js';
 
 const categorySchema = new mongoose.Schema(
   {
@@ -24,13 +25,15 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: [true, 'Category must have a hero image'],
     },
-
     parent: {
       // Self-reference for future sub-categories (e.g. Athletic Wear > Joggers).
-      // Stays null for a flat category list like GRVTY currently uses.
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
       default: null,
+    },
+    sortOrder: {
+      type: Number,
+      default: 0,
     },
     isActive: {
       type: Boolean,
@@ -40,14 +43,9 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Auto-generate slug from name, same pattern as Product.
 categorySchema.pre('save', function (next) {
   if (this.isModified('name')) {
-    this.slug = this.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+    this.slug = slugify(this.name);
   }
   next();
 });

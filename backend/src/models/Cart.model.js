@@ -8,8 +8,7 @@ const cartItemSchema = new mongoose.Schema(
       required: [true, 'Cart item must reference a product'],
     },
     variantId: {
-      // References the _id of a specific variant embedded inside the Product document.
-      // Tells us exactly which size + color the user chose.
+      // _id of a variant embedded inside the Product document (size + color).
       type: mongoose.Schema.Types.ObjectId,
       required: [true, 'Cart item must reference a product variant'],
     },
@@ -20,9 +19,8 @@ const cartItemSchema = new mongoose.Schema(
       default: 1,
     },
     price: {
-      // Snapshotted at the moment the item is added to cart.
-      // Prevents a price change in the Product document from
-      // silently changing what the user sees in their cart.
+      // Snapshotted when the item is added so a later price change
+      // doesn't silently change what the user sees in their cart.
       type: Number,
       required: [true, 'Cart item must have a snapshotted price'],
       min: [0, 'Price cannot be negative'],
@@ -33,19 +31,18 @@ const cartItemSchema = new mongoose.Schema(
 
 const cartSchema = new mongoose.Schema(
   {
+    // Guest carts live client-side (Zustand) and are merged on login,
+    // so every server-side cart belongs to exactly one user.
     user: {
-      // Null for guest carts (managed client-side via Zustand).
-      // Populated once the user logs in and the guest cart is merged.
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      default: null,
+      required: true,
+      unique: true,
     },
     items: {
       type: [cartItemSchema],
       default: [],
     },
-    // Computed total kept in sync by the controller on every mutation.
-    // Storing it avoids recalculating on every cart read.
     totalPrice: {
       type: Number,
       default: 0,
@@ -56,12 +53,8 @@ const cartSchema = new mongoose.Schema(
 );
 
 // Recalculate totalPrice from the items array before every save.
-// This runs automatically — the controller never sets totalPrice manually.
 cartSchema.pre('save', function (next) {
-  this.totalPrice = this.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  this.totalPrice = this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   next();
 });
 

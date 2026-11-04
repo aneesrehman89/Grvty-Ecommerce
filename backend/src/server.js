@@ -1,11 +1,18 @@
 import app from './app.js';
 import connectDB from './config/db.js';
+import env from './config/env.js';
 
-const PORT = process.env.PORT || 5000;
+// Local / traditional server entry. On Vercel, api/index.js is used instead.
+const start = async () => {
+  try {
+    await connectDB();
+    app.listen(env.PORT, () => {
+      console.log(`GRVTY API running on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+    });
+  } catch (error) {
+    console.error(`Failed to start server: ${error.message}`);
+    process.exit(1);
+  }
+};
 
-// Connect to MongoDB Atlas
-connectDB();
-
-app.listen(PORT, () => {
-  console.log(`GRVTY Backend executing on port ${PORT} inside src/ directory`);
-});
+start();
