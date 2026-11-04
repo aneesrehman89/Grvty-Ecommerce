@@ -198,6 +198,8 @@ export default function ProductDetail({ slug }) {
                         setQuantity((q) => Math.min(q, v.stock));
                       }}
                       title={out ? 'Out of stock' : `${v.stock} in stock`}
+                      aria-label={`Size ${v.size}${out ? ' — out of stock' : ''}`}
+                      aria-pressed={size === v.size}
                       className={cn(
                         'h-11 text-xs font-semibold border rounded-sm transition-colors relative',
                         size === v.size

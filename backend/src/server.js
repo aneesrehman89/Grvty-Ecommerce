@@ -2,7 +2,8 @@ import app from './app.js';
 import connectDB from './config/db.js';
 import env from './config/env.js';
 
-// Local / traditional server entry. On Vercel, api/index.js is used instead.
+// Local / traditional server entry. On Vercel, api/index.js serves the app
+// as a serverless function, so we don't open a port there.
 const start = async () => {
   try {
     await connectDB();
@@ -15,4 +16,8 @@ const start = async () => {
   }
 };
 
-start();
+if (!process.env.VERCEL) {
+  start();
+}
+
+export default app;

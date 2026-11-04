@@ -4,6 +4,7 @@ import { useReviews } from '@/lib/queries';
 import { Skeleton, Stars } from '@/components/ui/Feedback';
 import Pagination from '@/components/ui/Pagination';
 import { formatDate } from '@/lib/format';
+import ReviewForm from './ReviewForm';
 
 export default function ProductReviews({ product }) {
   const [page, setPage] = useState(1);
@@ -42,6 +43,7 @@ export default function ProductReviews({ product }) {
               </div>
             ))}
           </div>
+          <ReviewForm product={product} />
         </div>
 
         {/* List */}

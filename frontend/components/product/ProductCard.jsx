@@ -68,9 +68,9 @@ export default function ProductCard({ product, variant = 'portrait' }) {
       </div>
 
       <div className="p-4 space-y-1">
-        <div className="flex justify-between items-start gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-2">
           <h3 className="text-sm font-semibold text-brand-ink leading-tight">{product.name}</h3>
-          <div className="text-right">
+          <div className="sm:text-right flex items-baseline gap-2 sm:block">
             <span className="text-sm font-semibold text-brand-ink whitespace-nowrap">{formatPrice(product.price)}</span>
             {discount > 0 && (
               <span className="block text-[11px] text-brand-mutedGray line-through">

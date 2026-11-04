@@ -1,8 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import CartDrawer from '@/components/cart/CartDrawer';
+import { restoreSession } from '@/lib/session';
 
 export default function Providers({ children }) {
   // One QueryClient per browser session (not per render)
@@ -18,6 +19,11 @@ export default function Providers({ children }) {
         },
       })
   );
+
+  // Validate a persisted login and sync the server cart on first load
+  useEffect(() => {
+    restoreSession();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

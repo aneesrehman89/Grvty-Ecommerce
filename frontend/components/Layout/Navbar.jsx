@@ -7,6 +7,7 @@ import { useMounted } from '@/lib/hooks';
 import { cn } from '@/lib/format';
 import { CartIcon, SearchIcon, MenuIcon, CloseIcon } from '@/components/ui/Icons';
 import SearchBar from './SearchBar';
+import UserMenu from './UserMenu';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -68,6 +69,8 @@ export default function Navbar() {
           >
             <SearchIcon className="w-5 h-5" />
           </button>
+
+          <UserMenu />
 
           <button onClick={openCart} className="relative p-2 text-brand-ink hover:text-brand-blue transition-colors" aria-label="Open cart">
             <CartIcon className="w-5 h-5" />
