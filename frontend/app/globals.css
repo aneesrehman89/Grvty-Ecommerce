@@ -46,3 +46,71 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #2563EB;
 }
+/* Skeleton shimmer used for loading states */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #F4F4F5;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Slide-over drawer (cart, mobile filters) */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slideInRight {
+  animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.animate-slideInLeft {
+  animation: slideInLeft 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Soft fade used for hero slides and gallery image swaps */
+@keyframes fadeSoft {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fadeSoft {
+  animation: fadeSoft 0.45s ease-out;
+}
+
+/* Hide scrollbars on horizontal thumbnail strips */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Shared button + form primitives (match the existing hero CTAs) */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-brand-blue text-white hover:bg-brand-blueDark font-semibold text-xs tracking-wide uppercase px-6 py-3.5 transition-colors duration-200 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 bg-brand-ink text-white hover:bg-brand-blue font-semibold text-xs tracking-wide uppercase px-6 py-3.5 transition-colors duration-200 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-brand-ink border border-brand-border hover:border-brand-ink font-semibold text-xs tracking-wide uppercase px-6 py-3.5 transition-colors duration-200 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .input {
+    @apply w-full h-11 px-3.5 text-sm bg-white border border-brand-border rounded-sm text-brand-ink placeholder:text-brand-mutedGray focus:outline-none focus:border-brand-ink transition-colors;
+  }
+  .label {
+    @apply block text-[11px] font-bold tracking-widest uppercase text-brand-slate mb-1.5;
+  }
+  .container-page {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
